@@ -28,6 +28,22 @@ export async function getProductsHandler(
   return reply.code(200).send(products);
 }
 
+export async function getProductHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const productService = ProductService(request.server.prisma);
+  const { id } = request.params as { id: string };
+
+  const product = await productService.getProduct(Number(id));
+
+  if (!product) {
+    return reply.code(404).send({ message: "Product not found" });
+  }
+
+  return reply.code(200).send(product);
+}
+
 export async function updateProductHandler(
   request: FastifyRequest,
   reply: FastifyReply

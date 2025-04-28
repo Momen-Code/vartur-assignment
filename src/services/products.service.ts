@@ -9,7 +9,10 @@ export function ProductService(prisma: PrismaClient) {
     },
 
     async getProduct(id: number) {
-      return prisma.product.findUnique({ where: { id } });
+      return prisma.product.findUnique({
+        where: { id },
+        include: { category: true },
+      });
     },
 
     async listProducts() {

@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createProductHandler,
   deleteProductHandler,
+  getProductHandler,
   getProductsHandler,
   updateProductHandler,
 } from "../controllers/products.controller";
@@ -16,6 +17,15 @@ export default async function (fastify: FastifyInstance) {
       schema: { tags: productTags },
     },
     getProductsHandler
+  );
+
+  fastify.get(
+    "/:id",
+    {
+      preHandler: [fastify.authenticate],
+      schema: { tags: productTags },
+    },
+    getProductHandler
   );
 
   fastify.post(
