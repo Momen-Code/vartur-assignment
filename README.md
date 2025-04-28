@@ -131,12 +131,6 @@ Simply run the corresponding script depending on the target environment.
 
 ---
 
-## 📈 Database Diagram (ERD)
-
-![Database Diagram](assets/db-diagram.png)
-
----
-
 ## ✨ Author
 
 Prepared by **Mo'men Ayman** for **Vartur Backend Developer Assignment**.
