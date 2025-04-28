@@ -1,0 +1,12 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+
+# Prisma generated folders (if any)
+prisma/migrations/
+

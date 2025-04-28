@@ -1,0 +1,41 @@
+{
+  "name": "vartur-assignment",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ENVIRONMENT=dev nodemon --exec ts-node src/server.ts",
+    "local": "ENVIRONMENT=local nodemon --exec ts-node src/server.ts",
+    "prod": "ENVIRONMENT=prod node dist/server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "migrate": "prisma migrate dev",
+    "seed": "ts-node scripts/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@fastify/jwt": "^9.1.0",
+    "@fastify/redis": "^7.0.2",
+    "@fastify/swagger": "^9.5.0",
+    "@fastify/swagger-ui": "^5.2.2",
+    "@prisma/client": "^6.6.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "fastify": "^5.3.2",
+    "fastify-jwt": "^4.1.3",
+    "fastify-plugin": "^5.0.1",
+    "fastify-swagger": "^5.1.1",
+    "mysql2": "^3.14.0",
+    "prisma": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.2",
+    "@types/redis": "^4.0.10",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
