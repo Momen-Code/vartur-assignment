@@ -3,10 +3,16 @@ import { PrismaClient } from "@prisma/client";
 import { FastifyRedisNamespace } from "@fastify/redis";
 import { JWT } from "@fastify/jwt";
 
+export type UserPayload = {
+  id: number;
+  username: string;
+  role: string;
+};
+
 declare module "fastify" {
   interface FastifyRequest {
-    jwtVerify: () => Promise<any>;
-    user: any;
+    jwtVerify: () => Promise<UserPayload>;
+    user: UserPayload;
   }
 
   interface FastifyInstance {
