@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import Fastify from "fastify";
+import { config } from "./config/env";
 import authPlugin from "./plugins/auth";
 import prismaPlugin from "./plugins/prisma";
 import redis from "./plugins/redis";
@@ -27,7 +28,8 @@ app.setErrorHandler((error, request, reply) => {
 
   let statusCode = error.statusCode || 500;
   let message = error.message || "Something went wrong";
-  let code = undefined;
+  let code: string | undefined = undefined;
+  let name = error.name || "InternalServerError";
 
   if (error instanceof ApiError) {
     statusCode = error.statusCode;
@@ -36,22 +38,32 @@ app.setErrorHandler((error, request, reply) => {
   }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === "P2003") {
-      statusCode = 400;
-      message =
-        "Invalid reference: related record does not exist (e.g., parent category).";
-    }
-    if (error.code === "P2002") {
-      statusCode = 409;
-      message = "Duplicate record: unique constraint violated.";
+    name = "DatabaseError";
+    switch (error.code) {
+      case "P2002":
+        statusCode = 409;
+        message = "Duplicate record: unique constraint violated.";
+        break;
+      case "P2003":
+        statusCode = 400;
+        message = "Invalid reference: related record does not exist.";
+        break;
+      case "P2025":
+        statusCode = 404;
+        message = "Record not found.";
+        break;
+      default:
+        statusCode = 500;
+        message = "Database error occurred.";
     }
   }
 
   reply.status(statusCode).send({
     statusCode,
-    error: error.name || "InternalServerError",
+    error: name,
     message,
-    code,
+    ...(code ? { code } : {}),
+    ...(config.ENVIRONMENT !== "prod" ? { stack: error.stack } : {}),
   });
 });
 
