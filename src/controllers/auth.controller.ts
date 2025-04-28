@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { AuthService } from "../services/auth.service";
 import { generateToken } from "../utils/jwt";
+import { standardResponse } from "../utils/standard-response";
 
 export async function loginHandler(
   request: FastifyRequest,
@@ -22,5 +23,9 @@ export async function loginHandler(
 
   await request.server.redis.set(token, JSON.stringify(user), "EX", 3600);
 
-  return reply.code(200).send({ user, token });
+  return standardResponse({
+    reply,
+    message: "Login successful",
+    data: { token },
+  });
 }

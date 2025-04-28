@@ -23,7 +23,14 @@ export function CategoryService(prisma: PrismaClient) {
     },
 
     async getCategory(id: number) {
-      return prisma.category.findUnique({ where: { id } });
+      const category = await prisma.category.findUnique({ where: { id } });
+      if (!category) return null;
+      return {
+        id: category.id,
+        name: category.name,
+        parentId: category.parentId,
+        productCount: await countProducts(category.id),
+      };
     },
 
     async updateCategory(id: number, name: string, parentId?: number) {

@@ -1,20 +1,46 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ProductService } from "../services/products.service";
+import { standardResponse } from "../utils/standard-response";
+
+type CreateProductBody = {
+  name: string;
+  price: number;
+  categoryId: number;
+};
+type UpdateProductBody = {
+  name: string;
+  price: number;
+  categoryId: number;
+};
+
+type ProductParams = {
+  id: string;
+};
 
 export async function createProductHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
   const productService = ProductService(request.server.prisma);
-  const { name, price, categoryId } = request.body as {
-    name: string;
-    price: number;
-    categoryId: number;
-  };
+  const { name, price, categoryId } = request.body as CreateProductBody;
 
   const product = await productService.createProduct(name, price, categoryId);
 
-  return reply.code(201).send(product);
+  if (!product) {
+    return standardResponse({
+      reply,
+      statusCode: 400,
+      message: "Product creation failed",
+      data: null,
+    });
+  }
+
+  return standardResponse({
+    reply,
+    statusCode: 201,
+    message: "Product created successfully",
+    data: product,
+  });
 }
 
 export async function getProductsHandler(
@@ -25,7 +51,20 @@ export async function getProductsHandler(
 
   const products = await productService.listProducts();
 
-  return reply.code(200).send(products);
+  if (!products) {
+    return standardResponse({
+      reply,
+      statusCode: 404,
+      message: "Products not found",
+      data: null,
+    });
+  }
+
+  return standardResponse({
+    reply,
+    message: "Products retrieved successfully",
+    data: products,
+  });
 }
 
 export async function getProductHandler(
@@ -33,15 +72,24 @@ export async function getProductHandler(
   reply: FastifyReply
 ) {
   const productService = ProductService(request.server.prisma);
-  const { id } = request.params as { id: string };
+  const { id } = request.params as ProductParams;
 
   const product = await productService.getProduct(Number(id));
 
   if (!product) {
-    return reply.code(404).send({ message: "Product not found" });
+    return standardResponse({
+      reply,
+      statusCode: 404,
+      message: "Product not found",
+      data: null,
+    });
   }
 
-  return reply.code(200).send(product);
+  return standardResponse({
+    reply,
+    message: "Product retrieved successfully",
+    data: product,
+  });
 }
 
 export async function updateProductHandler(
@@ -49,12 +97,8 @@ export async function updateProductHandler(
   reply: FastifyReply
 ) {
   const productService = ProductService(request.server.prisma);
-  const { id } = request.params as { id: string };
-  const { name, price, categoryId } = request.body as {
-    name: string;
-    price: number;
-    categoryId: number;
-  };
+  const { id } = request.params as ProductParams;
+  const { name, price, categoryId } = request.body as UpdateProductBody;
 
   const product = await productService.updateProduct(
     Number(id),
@@ -63,7 +107,20 @@ export async function updateProductHandler(
     categoryId
   );
 
-  return reply.code(200).send(product);
+  if (!product) {
+    return standardResponse({
+      reply,
+      statusCode: 404,
+      message: "Product not found",
+      data: null,
+    });
+  }
+
+  return standardResponse({
+    reply,
+    message: "Product updated successfully",
+    data: product,
+  });
 }
 
 export async function deleteProductHandler(
@@ -71,9 +128,13 @@ export async function deleteProductHandler(
   reply: FastifyReply
 ) {
   const productService = ProductService(request.server.prisma);
-  const { id } = request.params as { id: string };
+  const { id } = request.params as ProductParams;
 
   await productService.deleteProduct(Number(id));
 
-  return reply.code(204).send();
+  return standardResponse({
+    reply,
+    message: "Product deleted successfully",
+    data: null,
+  });
 }

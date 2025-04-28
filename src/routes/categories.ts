@@ -3,6 +3,7 @@ import {
   createCategoryHandler,
   deleteCategoryHandler,
   getCategoriesHandler,
+  getCategoryHandler,
   updateCategoryHandler,
 } from "../controllers/categories.controller";
 import { categorySchemas, categoryTags } from "../docs/categories.docs";
@@ -16,6 +17,18 @@ export default async function (fastify: FastifyInstance) {
       schema: { tags: categoryTags, security: [{ bearerAuth: [] }] },
     },
     getCategoriesHandler
+  );
+
+  fastify.get(
+    "/:id",
+    {
+      preHandler: [fastify.authenticate],
+      schema: {
+        tags: categoryTags,
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    getCategoryHandler
   );
 
   fastify.post(
